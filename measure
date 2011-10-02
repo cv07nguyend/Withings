@@ -1,0 +1,48 @@
+<?php 
+
+print '{"status":0,"body":{"once":"21112cb3-1b433eef"}}';
+
+$myFile = "output.log";
+$fh = fopen($myFile, 'a') or die("can't open file");
+
+fwrite($fh, "### measure\n");
+
+$measureFile = "measure.tsv";
+$needsHeader = !file_exists($measureFile);
+$mh = fopen($measureFile, 'a') or die("can't open file");
+
+if($needsHeader){
+  fwrite($mh, "Date\tWeight (lbs)t\t2\t3\tHeight (m)\tFat Free Mass (Kg)\tFat Ratio(%)\t7\tFat Mass Weight (Kg)\t9\t10\t11\t12\t13\t14\t15\t16\t17\t18\t19\t20\n");
+}
+
+$measurements[0] = date("m/d/y");
+
+foreach ( $_POST as $key => $value ) {
+  fwrite($fh, $key . " " . "=" . " " . $value . "\n");
+  
+  if ($key=="measures") {
+    $obj = json_decode($value, true);
+    
+    // all values are represented times 1000 to remove decimal 
+    // points, so we have to divide by 1000 to get them back
+    foreach ($obj[measures] as $value) {
+      $measurements[$value[type]] = $value[value] / 1000;
+    }
+    
+    for($i = 0; $i <= 20; $i++) {
+      if($i > 0) {
+        $output .= "\t";
+      }
+  
+      switch($i) {
+        case 1: $output .= number_format($measurements[$i] * 2.20462262, 2); break;
+        default: $output .=  $measurements[$i]; break;
+      }
+    }
+    
+    fwrite($mh, $output . "\n");
+  }
+}
+
+fclose($fh);
+fclose($mh);

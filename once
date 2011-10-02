@@ -1,0 +1,14 @@
+<?php 
+
+print '{"status":0,"body":{"once":"21112cb3-1b433eef"}}'; 
+
+$myFile = "output.log"; 
+$fh = fopen($myFile, 'a') or die("can't open file"); 
+
+fwrite($fh, "### once\n");
+
+foreach ( $_POST as $key => $value ) { 
+  fwrite($fh, $key . " " . "=" . " " . $value . "\n"); 
+}
+
+fclose($fh);
